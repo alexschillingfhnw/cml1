@@ -10,109 +10,83 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_absolute_percentage_error, r2_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import KNNImputer
-
-# xgb model
-import xgboost as xgb
-from xgboost import XGBRegressor
-locale.setlocale(locale.LC_ALL, 'de_CH.UTF-8')
-df_raw = pd.read_csv('../../../../data/immo_data_clean.csv', low_memory=False)
-# Identify columns with object dtype
-categorical_columns = df_raw.select_dtypes(include=['object']).columns.tolist()
-
-# Identify columns with numerical dtype
-numerical_columns = df_raw.select_dtypes(include=['int64', 'float64']).columns.tolist()
-
-# Convert to dummy variables
-df_raw = pd.get_dummies(df_raw, columns=categorical_columns, drop_first=True, dtype=int)
-df = df_raw.copy()
-
-# Compute the 1% and 99% quantiles for each numerical column
-quantiles_1 = df[numerical_columns].quantile(0.015)
-quantiles_99 = df[numerical_columns].quantile(0.985)
-
-# Replace outliers in the original data with NaN values
-for column in numerical_columns:
-    condition = (df[column] < quantiles_1[column]) | (df[column] > quantiles_99[column])
-    df.loc[condition, column] = None
-
-# Remove all na rows in the target column
-df = df.dropna(subset=['price_cleaned'], axis=0)
-train, test = train_test_split(df, test_size=0.2, random_state=42)
-
-X_train = train.drop("price_cleaned", axis=1)
-y_train = train["price_cleaned"]
-
-X_test = test.drop("price_cleaned", axis=1)
-y_test = test["price_cleaned"]
-cols = X_train.columns
-
-X_train_with_na = X_train.copy()
-X_test_with_na = X_test.copy()
-
-imputer = KNNImputer(n_neighbors=5)
-X_train = pd.DataFrame(imputer.fit_transform(X_train), columns=cols)
-X_test = pd.DataFrame(imputer.transform(X_test), columns=cols)
-scaler = StandardScaler()
-X_train = pd.DataFrame(scaler.fit_transform(X_train), columns=cols)
-X_test = pd.DataFrame(scaler.transform(X_test), columns=cols)
+import pickle
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-def xgb_model(X_train, y_train, X_test, y_test, cv=5, max_depth=[12], learning_rate=[0.1], booster=['gbtree']):
-    """ Creates a XGBoost model with grid search cv
-    """
-    xgb = XGBRegressor()
 
-    param_grid = {
-        'max_depth': max_depth,
-        'learning_rate': learning_rate,
-        'booster': booster,
-        'random_state': [42]
-    }
+loaded_model = pickle.load(open('../../../99_gespeicherte_modelle/xgboost_model_big.sav', 'rb'))
 
-    grid_xgb = GridSearchCV(xgb, param_grid, cv=cv, n_jobs=5, scoring='neg_mean_absolute_percentage_error', verbose=1)
 
-    grid_xgb.fit(X_train, y_train)
-
-    return grid_xgb
-
-model= xgb_model(
-    X_train,
-    y_train,
-    X_test,
-    y_test,
-    cv=5,
-    max_depth = [None, 6, 9, 12, 15],
-    learning_rate = [0.1],
-    booster = ['gbtree']
-)
-
-# create prediction function for above xgb model
 def predict(model, X):
     return model.predict(X)
 
-# make title
+
 st.title('Immo-Calculator')
 
-# make input fields
+
 with st.form(key='my_form'):
-    zip_code = st.number_input(label='Floor Space')
-    year_built = st.selectbox('Year', range(1900, 2023))
-    living_area_unified = st.number_input(label='SQM Living Space')
-    Floor_unified = st.number_input(label='# Floors')
-    Floor_space = st.number_input(label='Floor Space')
-    Plot_area = st.number_input(label='Plot Area')
-    Rooms = st.number_input(label='# Rooms')
-    distance_to_station = st.number_input(label='Distance to Trainstation')
-    type = st.selectbox('Type', ['Flat', 'House', 'Castle', 'Chalet','Villa','Rustico','Detached House','Loft','Studio'])
-    municipality = st.text_input(label='Municipality')
-    availability_category = st.selectbox('Availability', ['Immediately', 'By Agreement', 'Date (Specify later)'])
-    availability_date = st.date_input(label='Availability Date')
+    column_names = ["Zip", "Year built:", "Living_area_unified", "Floor_unified", "Floor_space_merged", 
+                    "Plot_area_unified", "Rooms_new", "gde_workers_sector1", "gde_workers_sector2", 
+                    "gde_workers_sector3", "gde_workers_total", "distanceToTrainStation", 
+                    "gde_area_agriculture_percentage", "gde_area_forest_percentage", 
+                    "gde_area_nonproductive_percentage", "gde_area_settlement_percentage", 
+                    "gde_average_house_hold", "gde_empty_apartments", "gde_foreigners_percentage", 
+                    "gde_new_homes_per_1000", "gde_pop_per_km2", "gde_population", 
+                    "gde_private_apartments", "gde_social_help_quota", "gde_tax", "gde_politics_bdp", 
+                    "gde_politics_cvp", "gde_politics_evp", "gde_politics_fdp", "gde_politics_glp", 
+                    "gde_politics_gps", "gde_politics_pda", "gde_politics_rights", "gde_politics_sp", 
+                    "gde_politics_svp", "NoisePollutionRailwayL", "NoisePollutionRailwayM", 
+                    "NoisePollutionRailwayS", "NoisePollutionRoadL", "NoisePollutionRoadM", 
+                    "NoisePollutionRoadS", "PopulationDensityL", "PopulationDensityM", 
+                    "PopulationDensityS", "RiversAndLakesL", "RiversAndLakesM", "RiversAndLakesS", 
+                    "WorkplaceDensityL", "WorkplaceDensityM", "WorkplaceDensityS", "ForestDensityL", 
+                    "ForestDensityM", "ForestDensityS", "kanton_AI", "kanton_AR", "kanton_BE", 
+                    "kanton_BL", "kanton_BS", "kanton_FR", "kanton_GE", "kanton_GL", "kanton_GR", 
+                    "kanton_JU", "kanton_LU", "kanton_NE", "kanton_NW", "kanton_OW", "kanton_SG", 
+                    "kanton_SH", "kanton_SO", "kanton_SZ", "kanton_TG", "kanton_TI", "kanton_UR", 
+                    "kanton_VD", "kanton_VS", "kanton_ZG", "kanton_ZH", "type_unified_attic-room", 
+                    "type_unified_castle", "type_unified_chalet", "type_unified_detached-house", 
+                    "type_unified_detached-secondary-suite", "type_unified_duplex-maisonette", 
+                    "type_unified_farmhouse", "type_unified_flat", "type_unified_furnished-residential-property", 
+                    "type_unified_loft", "type_unified_penthouse", "type_unified_rustico", 
+                    "type_unified_secondary-suite", "type_unified_semi-detached-house", 
+                    "type_unified_single-room", "type_unified_stepped-apartment", 
+                    "type_unified_stepped-house", "type_unified_studio", "type_unified_terrace-house", 
+                    "type_unified_villa", "Availability_Categorized_More than 6 months", 
+                    "Availability_Categorized_On request", "Availability_Categorized_Within 1 month", 
+                    "Availability_Categorized_Within 3 months", "Availability_Categorized_Within 6 months"]
+
+    availability_list = [col.split("_")[-1] for col in column_names if col.startswith("Availability_Categorized_")]
+    kanton_list = [col.split("_")[-1] for col in column_names if col.startswith("kanton_")]
+    type_unified_list = [col.split("_")[-1] for col in column_names if col.startswith("type_unified_")]
+    user_inputs = {}
+
+    st.title("Expert Form")
+    for column_name in column_names:
+        if column_name.startswith("kanton_") or column_name.startswith("type_") or column_name.startswith("Availability_"):
+            pass
+        else:
+            user_inputs[column_name] = st.number_input(f"Enter {column_name}")
+    kanton = st.selectbox(f"Select Canton", kanton_list)
+    type_unified = st.selectbox(f"Select Type", type_unified_list)
+    availability = st.selectbox(f"Select Availability", availability_list)
+  
     submit_button = st.form_submit_button('Submit')
 
     if submit_button:
-        # make prediction
-        X = pd.DataFrame({'zip_code': [zip_code], 'year_built': [year_built], 'living_area_unified': [living_area_unified], 'Floor_unified': [Floor_unified], 'Floor_space': [Floor_space], 'Plot_area': [Plot_area], 'Rooms': [Rooms], 'distance_to_station': [distance_to_station], 'type_House': [type], 'municipality': [municipality], 'availability_category': [availability_category], 'availability_date': [availability_date]})
-        #prediction = predict(model, X)
-        #prediction_local = locale.format_string('%.2f', prediction[0], True)
-        #st.subheader(f'Predicted Price: {prediction_local} CHF')
-        st.write(X)
+        if 'result_df' in locals():
+            del result_df
+        df_kanton = pd.DataFrame({col: [1] if col == f"kanton_{kanton}" else [0] for col in column_names if col.startswith("kanton_")})
+        df_type_unified = pd.DataFrame({col: [1] if col == f"type_unified_{type_unified}" else [0] for col in column_names if col.startswith("type_unified_")})
+        df_availability = pd.DataFrame({col: [1] if col == f"Availability_Categorized_{availability}" else [0] for col in column_names if col.startswith("Availability_Categorized_")})
+        df_user_inputs = pd.DataFrame([user_inputs])
+        df = pd.DataFrame([user_inputs])
+        df = df.replace(0.0, np.nan)
+        result_df = pd.concat([df, df_kanton, df_type_unified, df_availability], axis=1)
+        prediction = 0
+        prediction = predict(loaded_model, result_df)
+        # change locale to CHF
+        locale.setlocale(locale.LC_ALL, 'de_CH.UTF-8')
+        prediction_local = locale.format_string('%.2f', prediction[0], True)
+        st.write(f'Predicted Price: {prediction_local} CHF')
+        st.write(result_df)
         

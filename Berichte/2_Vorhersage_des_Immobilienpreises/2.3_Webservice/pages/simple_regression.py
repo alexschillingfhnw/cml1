@@ -31,9 +31,9 @@ def predict(model, X):
 
 
 df = pd.read_csv('../../../../data/immo_data_clean.csv', low_memory=False)
-df = df[['Living_area_unified', 'Floor space','price_cleaned']]
-df = df.dropna(subset=['Living_area_unified','Floor space'], how='all')
-df['Living_area_unified'] = df['Living_area_unified'].fillna(df['Floor space'])
+df = df[['Living_area_unified', 'Floor_space_merged','price_cleaned']]
+df = df.dropna(subset=['Living_area_unified','Floor_space_merged'], how='all')
+df['Living_area_unified'] = df['Living_area_unified'].fillna(df['Floor_space_merged'])
 z = np.abs(stats.zscore(df['Living_area_unified']))
 df_temp = df[(z < 18)]
 X34 = df['Living_area_unified']
