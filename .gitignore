@@ -1,2 +1,4 @@
 data/
 .DS_Store
+
+Berichte/99_gespeicherte_modelle/*.csv
