@@ -1,7 +1,7 @@
 # cml1 - Immobilienrechner
 ## Aufgabenstellung
 
-In dieser Challenge untersuchen wir einen Datensatz von Schweizer Immobilien mit Machine Learning-Methoden. Du entwickelst verschiedene Modelle zur Vorhersage des Preises von Immobilienobjekten sowie des Objekttyps, unter Verwendung zahlreicher Attribute. Weiter untersuchst du die Eigenschaften der Modelle und vergleichst deren Vorhersagekraft.
+In dieser Challenge untersuchen wir einen Datensatz von Schweizer Immobilien mit Machine Learning-Methoden. Wir entwickeln verschiedene Modelle zur Vorhersage des Preises von Immobilienobjekten sowie des Objekttyps, unter Verwendung zahlreicher Attribute. Weiter untersuchen wir die Eigenschaften der Modelle und vergleichen deren Vorhersagekraft.
 
 ## Teilaufgaben
 
