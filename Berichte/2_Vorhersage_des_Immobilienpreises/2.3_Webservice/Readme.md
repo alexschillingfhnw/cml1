@@ -14,7 +14,8 @@ Skript, welches den Web-Service startet und eine kurze Anleitung, wie dieser zu 
 ### App Beschreibung
 
 - `home.py`: Diese Datei bildet die "Mainpage" des Streamlit Apps. Es ist in der Lage die weiteren Dateien in subfolder `./pages` zu erkennen und als Unterseiten, bzw. in der Navigation als Navigationspunkte aufzulisten. <br>
-Die Homeseite, gibt einen kurzen einblick um was es geht, und welcher Menüpunkt für welche Zielgruppe gedacht ist.
+Die Homeseite, gibt einen kurzen einblick um was es geht, und welcher Menüpunkt für welche Zielgruppe gedacht ist.<br>
+Die App kann gestartet werden, in dem man mit dem Terminal in den Ordner von home.py wechselt (oder den kompletten pfad beim aufrufen angibt) und dann streamlit run ./home.py ausführt.
 
 - `simple_regression.py`: Diese Unterseite ist als Streamlit app aufgesetzt und ergänzt home.py. Es baut auf einem der einfachen Regressionsmodelle aus 2.1 auf und verwendet für die Preisvorhersage lediglich die Anzahl Quadratmeter in bezug auf die Wohnfläche.
 
