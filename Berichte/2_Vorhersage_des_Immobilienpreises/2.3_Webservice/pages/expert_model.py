@@ -22,27 +22,23 @@ st.title('Immo-Calculator')
 # Form to enter user inputs
 with st.form(key='my_form'):
     # Column Names, allows semi-automated creation of form - also helps when model features change
-    column_names = ["Year built:", "Living_area_unified", "Floor_space_merged", "Plot_area_unified", 
-                "Rooms_new", "distanceToTrainStation", "gde_workers_sector1", "gde_workers_sector2", 
-                "gde_workers_sector3", "gde_workers_total", "gde_area_agriculture_percentage", 
-                "gde_area_forest_percentage", "gde_area_nonproductive_percentage", "gde_area_settlement_percentage", 
-                "gde_average_house_hold", "gde_empty_apartments", "gde_foreigners_percentage", 
-                "gde_new_homes_per_1000", "gde_pop_per_km2", "gde_population", 
-                "gde_private_apartments", "gde_social_help_quota", "gde_tax", "kanton_AI", 
-                "kanton_AR", "kanton_BE", "kanton_BL", "kanton_BS", "kanton_FR", "kanton_GE", 
-                "kanton_GL", "kanton_GR", "kanton_JU", "kanton_LU", "kanton_NE", "kanton_NW", 
-                "kanton_OW", "kanton_SG", "kanton_SH", "kanton_SO", "kanton_SZ", "kanton_TG", 
-                "kanton_TI", "kanton_UR", "kanton_VD", "kanton_VS", "kanton_ZG", "kanton_ZH", 
-                "type_unified_attic-flat", "type_unified_chalet", "type_unified_detached-house", 
-                "type_unified_duplex-maisonette", "type_unified_farmhouse", "type_unified_flat", 
-                "type_unified_loft", "type_unified_penthouse", "type_unified_rustico", 
-                "type_unified_semi-detached-house", "type_unified_stepped-apartment", 
-                "type_unified_stepped-house", "type_unified_studio", "type_unified_terrace-house", 
-                "type_unified_villa"]
+    column_names = ['Year built:', 'Living_area_unified',
+       'Plot_area_unified', 'Rooms_new', 'gde_workers_total',
+       'gde_area_agriculture_percentage', 'gde_area_forest_percentage',
+       'gde_area_nonproductive_percentage', 'gde_area_settlement_percentage',
+       'gde_average_house_hold', 'gde_empty_apartments',
+       'gde_foreigners_percentage', 'gde_new_homes_per_1000',
+       'gde_pop_per_km2', 'gde_population', 'gde_private_apartments',
+       'gde_social_help_quota', 'gde_tax', 'kanton_AI', 'kanton_AR',
+       'kanton_BE', 'kanton_BL', 'kanton_BS', 'kanton_FR', 'kanton_GE',
+       'kanton_GL', 'kanton_GR', 'kanton_JU', 'kanton_LU', 'kanton_NE',
+       'kanton_NW', 'kanton_OW', 'kanton_SG', 'kanton_SH', 'kanton_SO',
+       'kanton_SZ', 'kanton_TG', 'kanton_TI', 'kanton_UR', 'kanton_VD',
+       'kanton_VS', 'kanton_ZG', 'kanton_ZH']
 
     # Lists for Selectboxes
     kanton_list = [col.split("_")[-1] for col in column_names if col.startswith("kanton_")]
-    type_unified_list = [col.split("_")[-1] for col in column_names if col.startswith("type_unified_")]
+    #type_unified_list = [col.split("_")[-1] for col in column_names if col.startswith("type_unified_")]
     user_inputs = {}
     # Create Form, starting with title
     st.title("Expert Form")
@@ -55,7 +51,7 @@ with st.form(key='my_form'):
             user_inputs[column_name] = st.number_input(f"Enter {column_name}")
     # Selectboxes for categorical features
     kanton = st.selectbox(f"Select Canton", kanton_list)
-    type_unified = st.selectbox(f"Select Type", type_unified_list)
+    #type_unified = st.selectbox(f"Select Type") #, type_unified_list)
     
     # Submit Button
     submit_button = st.form_submit_button('Submit')
@@ -67,14 +63,14 @@ with st.form(key='my_form'):
             del result_df
         # Creates dummy dataframes for categorical features
         df_kanton = pd.DataFrame({col: [1] if col == f"kanton_{kanton}" else [0] for col in column_names if col.startswith("kanton_")})
-        df_type_unified = pd.DataFrame({col: [1] if col == f"type_unified_{type_unified}" else [0] for col in column_names if col.startswith("type_unified_")})
+        #df_type_unified = pd.DataFrame({col: [1] if col == f"type_unified_{type_unified}" else [0] for col in column_names if col.startswith("type_unified_")})
         # Creates dataframe from user inputs
         df_user_inputs = pd.DataFrame([user_inputs])
         # Replaces 0 with NaN to avoid errors when scaling
         df = pd.DataFrame([user_inputs])
         df = df.replace(0.0, np.nan)
         # Concatenates all dataframes
-        result_df = pd.concat([df, df_kanton, df_type_unified], axis=1)
+        result_df = pd.concat([df, df_kanton], axis=1)#, df_type_unified], axis=1)
         # Scales dataframe
         result_df_standardized = pd.DataFrame(scaler.transform(result_df), columns=result_df.columns)
         # Predicts price
