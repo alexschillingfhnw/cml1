@@ -22,19 +22,21 @@ st.title('Immo-Calculator')
 # Form to enter user inputs
 with st.form(key='my_form'):
     # Column Names, allows semi-automated creation of form - also helps when model features change
-    column_names = ['Year built:', 'Living_area_unified',
-       'Plot_area_unified', 'Rooms_new', 'gde_workers_total',
-       'gde_area_agriculture_percentage', 'gde_area_forest_percentage',
-       'gde_area_nonproductive_percentage', 'gde_area_settlement_percentage',
-       'gde_average_house_hold', 'gde_empty_apartments',
-       'gde_foreigners_percentage', 'gde_new_homes_per_1000',
-       'gde_pop_per_km2', 'gde_population', 'gde_private_apartments',
-       'gde_social_help_quota', 'gde_tax', 'kanton_AI', 'kanton_AR',
-       'kanton_BE', 'kanton_BL', 'kanton_BS', 'kanton_FR', 'kanton_GE',
-       'kanton_GL', 'kanton_GR', 'kanton_JU', 'kanton_LU', 'kanton_NE',
-       'kanton_NW', 'kanton_OW', 'kanton_SG', 'kanton_SH', 'kanton_SO',
-       'kanton_SZ', 'kanton_TG', 'kanton_TI', 'kanton_UR', 'kanton_VD',
-       'kanton_VS', 'kanton_ZG', 'kanton_ZH']
+    column_names = [
+        'Floor_unified', 'Living_area_unified', 'Plot_area_unified',
+        'Rooms_new', 'Year built:', 'gde_area_agriculture_percentage',
+        'gde_area_forest_percentage', 'gde_area_nonproductive_percentage',
+        'gde_area_settlement_percentage', 'gde_average_house_hold',
+        'gde_empty_apartments', 'gde_foreigners_percentage',
+        'gde_new_homes_per_1000', 'gde_pop_per_km2', 'gde_population',
+        'gde_private_apartments', 'gde_social_help_quota', 'gde_tax',
+        'gde_workers_total', 'kanton_AI', 'kanton_AR', 'kanton_BE', 'kanton_BL',
+        'kanton_BS', 'kanton_FR', 'kanton_GE', 'kanton_GL', 'kanton_GR',
+        'kanton_JU', 'kanton_LU', 'kanton_NE', 'kanton_NW', 'kanton_OW',
+        'kanton_SG', 'kanton_SH', 'kanton_SO', 'kanton_SZ', 'kanton_TG',
+        'kanton_TI', 'kanton_UR', 'kanton_VD', 'kanton_VS', 'kanton_ZG',
+        'kanton_ZH'
+    ]
 
     # Lists for Selectboxes
     kanton_list = [col.split("_")[-1] for col in column_names if col.startswith("kanton_")]
@@ -87,7 +89,7 @@ with st.form(key='my_form'):
 # Alternative Input Option - List
 st.title("List Input Option")
 # Text Area for user input
-list_input = st.text_area(" Alternative: Enter a list of values separated by semicolons (Kanton and Type already as dummies):", "")
+list_input = st.text_area(" Alternative: Enter a list of values separated by semicolons (Kanton already as dummies):", "")
 # separate values by semicolon
 list_values = [float(val) for val in list_input.split(";") if val.strip()]
 
